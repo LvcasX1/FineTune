@@ -129,6 +129,7 @@ struct MenuBarPopupView: View {
         }
         .padding(DesignTokens.Spacing.lg)
         .frame(width: DesignTokens.Dimensions.popupWidth)
+        .focusEffectDisabled()
         .darkGlassBackground()
         .environment(\.colorScheme, .dark)
         .onAppear {
