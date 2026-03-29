@@ -1,14 +1,13 @@
 // FineTune/WebSocket/StreamDeckBridge.swift
 import AppKit
-import AudioToolbox
 import os
-
-private let logger = Logger(subsystem: "com.finetuneapp.FineTune", category: "StreamDeckBridge")
 
 @MainActor
 final class StreamDeckBridge {
 
     // MARK: - Properties
+
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "FineTune", category: "StreamDeckBridge")
 
     private let audioEngine: AudioEngine
     private let server: WebSocketServer
@@ -18,6 +17,8 @@ final class StreamDeckBridge {
 
     /// Snapshot of the last broadcast state to avoid redundant sends.
     private var lastStateJSON: Data?
+
+    private let encoder = JSONEncoder()
 
     /// Apps the bridge has seen while active. Keyed by persistenceIdentifier.
     /// Remembered so we can include them as inactive in state broadcasts with their persisted settings.
@@ -215,7 +216,7 @@ final class StreamDeckBridge {
         let wsMessage = WebSocketMessage.state(message)
 
         // Deduplicate: skip broadcast if state hasn't changed
-        if let data = try? JSONEncoder().encode(wsMessage) {
+        if let data = try? encoder.encode(wsMessage) {
             if data == lastStateJSON { return }
             lastStateJSON = data
         }
@@ -332,13 +333,5 @@ final class StreamDeckBridge {
         }
 
         return pngData.base64EncodedString()
-    }
-}
-
-// MARK: - Clamped Extension
-
-extension Comparable {
-    func clamped(to range: ClosedRange<Self>) -> Self {
-        min(max(self, range.lowerBound), range.upperBound)
     }
 }

@@ -3,12 +3,12 @@ import Foundation
 import Network
 import os
 
-private let logger = Logger(subsystem: "com.finetuneapp.FineTune", category: "WebSocket")
-
 @MainActor
 final class WebSocketServer {
 
     // MARK: - Properties
+
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "FineTune", category: "WebSocketServer")
 
     private var listener: NWListener?
     private var clients: [NWConnection] = []
@@ -100,7 +100,7 @@ final class WebSocketServer {
                 isComplete: true,
                 completion: .contentProcessed { error in
                     if let error {
-                        logger.warning("Send failed: \(error.localizedDescription)")
+                        self.logger.warning("Send failed: \(error.localizedDescription)")
                     }
                 }
             )
@@ -128,7 +128,7 @@ final class WebSocketServer {
                 isComplete: true,
                 completion: .contentProcessed { error in
                     if let error {
-                        logger.warning("Levels send failed: \(error.localizedDescription)")
+                        self.logger.warning("Levels send failed: \(error.localizedDescription)")
                     }
                 }
             )
@@ -204,7 +204,7 @@ final class WebSocketServer {
 
             Task { @MainActor in
                 if let error {
-                    logger.warning("Receive error: \(error.localizedDescription)")
+                    self.logger.warning("Receive error: \(error.localizedDescription)")
                     return
                 }
 

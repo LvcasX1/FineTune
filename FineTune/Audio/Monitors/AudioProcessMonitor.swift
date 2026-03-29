@@ -272,15 +272,12 @@ final class AudioProcessMonitor: AudioProcessMonitoring {
                     guard let url = directApp?.bundleURL, url.pathExtension == "app" else { return false }
                     // If the path contains ".app/" before the final .app, it's a nested helper
                     let pathStr = url.path
-                    if let range = pathStr.range(of: ".app/") {
-                        // There's a ".app/" earlier in the path — this is nested
-                        _ = range // suppress unused warning
+                    if pathStr.contains(".app/") {
                         return false
                     }
                     return true
                 }()
                 let resolvedApp = isRealApp ? directApp : findResponsibleApp(for: pid, in: runningAppsByPID)
-
 
                 let name: String
                 let icon: NSImage
@@ -317,7 +314,6 @@ final class AudioProcessMonitor: AudioProcessMonitoring {
                         ?? NSImage()
                     bundleID = coreAudioBundleIDRaw
                 }
-
 
                 // Skip system daemons (siri, coreaudio, etc.) - they shouldn't appear in the apps list
                 if isSystemDaemon(bundleID: bundleID, name: name) { continue }
